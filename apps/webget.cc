@@ -5,7 +5,7 @@
 #include <iostream>
 
 using namespace std;
-
+//准备开始
 void get_URL(const string &host, const string &path) {
     // Your code here.
 
