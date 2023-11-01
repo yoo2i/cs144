@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sys/socket.h>
 
 using namespace std;
 //开始编码
@@ -17,6 +18,19 @@ void get_URL(const string &host, const string &path) {
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
 
+    TCPSocket mysocket;
+    mysocket.connect(Address(host,"http"));
+    mysocket.write("GET "+path+" HTTP/1.1"+"\r\n"); //系统输入的path自带第一个分割符/，不用自己加
+    mysocket.write("Host: "+host+"\r\n");
+    mysocket.write("Connection: close\r\n");
+    mysocket.write("\r\n");
+    mysocket.shutdown(SHUT_WR);
+
+    while (!mysocket.eof()) {
+        cout<<mysocket.read();
+    }
+
+    mysocket.close();//为什么不可以只关闭SHUT_RD来充当close?SHUT_WR已经关闭了
     cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     cerr << "Warning: get_URL() has not been implemented yet.\n";
 }

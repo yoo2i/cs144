@@ -1,7 +1,9 @@
 #ifndef SPONGE_LIBSPONGE_BYTE_STREAM_HH
 #define SPONGE_LIBSPONGE_BYTE_STREAM_HH
 
+#include <cstddef>
 #include <string>
+#include <deque>
 
 //! \brief An in-order byte stream.
 
@@ -17,11 +19,18 @@ class ByteStream {
     // that's a sign that you probably want to keep exploring
     // different approaches.
 
-    bool _error{};  //!< Flag indicating that the stream suffered an error.
+    //
+    std::deque<char> _buffer = {};
+    size_t _read_count{};
+    size_t _write_count{};
+    size_t _capacity{};
+    bool _write_end{};
+    bool _error{};  //c++11引入的“列表初始化”，bool初始化为false
 
   public:
     //! Construct a stream with room for `capacity` bytes.
     ByteStream(const size_t capacity);
+
 
     //! \name "Input" interface for the writer
     //!@{
@@ -40,6 +49,7 @@ class ByteStream {
     //! Indicate that the stream suffered an error.
     void set_error() { _error = true; }
     //!@}
+
 
     //! \name "Output" interface for the reader
     //!@{
@@ -71,11 +81,13 @@ class ByteStream {
     bool eof() const;
     //!@}
 
+
     //! \name General accounting
+    //是总计数器，记录了这个类一共读写多少，所以要定义私有成员变量来记录
     //!@{
 
     //! Total number of bytes written
-    size_t bytes_written() const;
+    size_t bytes_written() const;//
 
     //! Total number of bytes popped
     size_t bytes_read() const;
